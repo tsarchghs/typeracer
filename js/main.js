@@ -24,7 +24,7 @@ document.addEventListener("keydown", (event) => {
 		if (current_char_index > 0){
 			text[current_char_index-1][1] = "black";
 		}
-		if (current_char_index>1){
+		if (current_char_index>=1){
 			current_char_index--;
 		}
 	}
