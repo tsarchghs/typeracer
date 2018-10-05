@@ -21,7 +21,7 @@ var text_input = document.getElementById("text_input");
 
 document.addEventListener("keydown", (event) => {
 	if (event.key == "Backspace"){
-		if (current_char_index > 0){
+		if (text.length > current_char_index > 0){
 			text[current_char_index-1][1] = "black";
 		}
 		if (current_char_index>=1){
