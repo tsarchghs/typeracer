@@ -19,14 +19,14 @@ function update_text() {
 update_text();
 var text_input = document.getElementById("text_input");
 
-document.addEventListener("keyup", (event) => {
+document.addEventListener("keydown", (event) => {
 	if (event.key == "Backspace"){
 		text[current_char_index-1][1] = "black";
 		if (current_char_index>1){
 			current_char_index--;
 		}
 	}
-	else if (event.key == " "){
+	else if (event.key == " " || event.key == "Enter"){
 		text_input.value = "";
 		current_char_index++;
 	}
