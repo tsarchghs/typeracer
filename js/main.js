@@ -1,5 +1,35 @@
 
-var random_text = "blabla abc";
+var name = "Anonymous#" + Math.floor((Math.random()*1000)+1);
+var TypeRacerWebSocket = new WebSocket("ws://localhost:8000/ws/TypeRacer/");
+
+TypeRacerWebSocket.onmessage = function(event){
+	json = JSON.parse(event["data"]);
+	players_div = document.getElementById("players")
+	chars = json["message"]["data"];
+	player_name = json["message"]["player"];
+	if (document.getElementById(player_name)) {
+		document.getElementById(`${player_name}_h2`).innerHTML = `${player_name} - ${count_green_chars(chars)}-${chars.length}`;
+	} else {
+		console.log("DAS");
+		player_div = document.createElement("div")
+		player_div.id = player_name;
+		player_h2 = document.createElement("h2")
+		player_h2.id = `${player_name}_h2`
+		player_h2.innerHTML = `${player_name} - ${count_green_chars(chars)}-${chars.length}`;
+		player_div.appendChild(player_h2);
+		players_div.appendChild(player_div);
+	}
+}
+function count_green_chars(word) {
+	var n = 0
+	for (var char_color in word) {
+		if (word[char_color][1] === "green") {
+			n++
+		}
+	}
+	return n;
+}
+var random_text = "blabla abc dsa";
 var text_characters = Array.from(random_text);
 var text = [];
 var current_char_index = 0
@@ -31,12 +61,14 @@ document.addEventListener("keydown", (event) => {
 	}
 	else if (event.key == " " || event.key == "Enter"){
 		text_input.value = "";
+		text[current_char_index][1] = "green";
 		current_char_index++;
 	}
 	else if (current_char_index < text.length){
 		if (text_input === document.activeElement){
 			if (event.key === text[current_char_index][0]){
 				text[current_char_index][1] = "green";
+				TypeRacerWebSocket.send(JSON.stringify({"player":name,"data":text}));
 			} else {
 				text[current_char_index][1] = "red";
 			}
