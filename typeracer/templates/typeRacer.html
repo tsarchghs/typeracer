@@ -4,9 +4,11 @@
 		<title>TypeRacer</title>
 	</head>
 	<body>
-		<input type="hidden" id="race_id" value="{{race_id}}">
+		<input type="hidden" id="race_id" value="{{race.id}}">
+		<input type="hidden" id="race_max_players" value="{{race.max_players}}">
 		<center>
 			<h1>TypeRacer</h1>
+			<div id="info"></div>
 			<div id="players">
 				{% for player in players %}
 				<div id="Anonymous#{{player.id}}">
