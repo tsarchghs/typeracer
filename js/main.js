@@ -2,24 +2,7 @@
 var name = "Anonymous#" + Math.floor((Math.random()*1000)+1);
 var TypeRacerWebSocket = new WebSocket("ws://localhost:8000/ws/TypeRacer/");
 
-TypeRacerWebSocket.onmessage = function(event){
-	json = JSON.parse(event["data"]);
-	players_div = document.getElementById("players")
-	chars = json["message"]["data"];
-	player_name = json["message"]["player"];
-	if (document.getElementById(player_name)) {
-		document.getElementById(`${player_name}_h2`).innerHTML = `${player_name} - ${count_green_chars(chars)}-${chars.length}`;
-	} else {
-		console.log("DAS");
-		player_div = document.createElement("div")
-		player_div.id = player_name;
-		player_h2 = document.createElement("h2")
-		player_h2.id = `${player_name}_h2`
-		player_h2.innerHTML = `${player_name} - ${count_green_chars(chars)}-${chars.length}`;
-		player_div.appendChild(player_h2);
-		players_div.appendChild(player_div);
-	}
-}
+
 function count_green_chars(word) {
 	var n = 0
 	for (var char_color in word) {
@@ -46,6 +29,55 @@ function update_text() {
 		type_text.appendChild(p);
 	}
 }
+function addPlayer(chars,player_name=""){
+	players_div = document.getElementById("players");
+	if (!player_name){
+		player_name = name;
+	}
+	player_div = document.createElement("div")
+	player_div.id = player_name;
+	player_h2 = document.createElement("h2")
+	player_h2.id = `${player_name}_h2`
+	if (chars){
+		player_h2.innerHTML = `${player_name} - ${count_green_chars(chars)}-${chars.length}`;
+	} else {
+		player_h2.innerHTML = `${player_name} - 0-${text.length}`;
+	}
+	player_div.appendChild(player_h2);
+	players_div.appendChild(player_div);
+}
+
+TypeRacerWebSocket.onmessage = function(event){
+	json = JSON.parse(event["data"]);
+	console.log(json);
+	message = json["message"];
+	if ("connected_to_lobby" in json){
+		TypeRacerWebSocket.send(JSON.stringify({"connected_to_lobby":true,"race_id":"1"}))	
+	}
+	if (message && "add_player" in message) {
+		if (!document.getElementById(message["player_name"])){
+			addPlayer("",message["player_name"]);
+		}
+	} else if (json["Connected"]){
+		player_name = name;
+		if (player_name){
+			TypeRacerWebSocket.send(JSON.stringify({"add_player":true,"player_name":player_name}))
+		}
+	} else if (message && !("connected_to_lobby" in message)) {
+		console.log(event);
+		chars = json["message"]["data"];
+		player_name = json["message"]["player"];
+		if (document.getElementById(player_name)) {
+			document.getElementById(`${player_name}_h2`).innerHTML = `${player_name} - ${count_green_chars(chars)}-${chars.length}`;
+		} else {
+			addPlayer(chars,player_name);
+		}
+		if (player_name){
+			TypeRacerWebSocket.send(JSON.stringify({"add_player":true,"player_name":player_name}))
+		}
+	}
+}
+
 update_text();
 var text_input = document.getElementById("text_input");
 
@@ -68,7 +100,6 @@ document.addEventListener("keydown", (event) => {
 		if (text_input === document.activeElement){
 			if (event.key === text[current_char_index][0]){
 				text[current_char_index][1] = "green";
-				TypeRacerWebSocket.send(JSON.stringify({"player":name,"data":text}));
 			} else {
 				text[current_char_index][1] = "red";
 			}
@@ -76,4 +107,5 @@ document.addEventListener("keydown", (event) => {
 		}
 	}
 	update_text();
+	TypeRacerWebSocket.send(JSON.stringify({"player":name,"data":text}));
 })
