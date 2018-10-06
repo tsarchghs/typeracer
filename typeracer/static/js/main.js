@@ -2,6 +2,7 @@
 var id = Math.floor((Math.random()*1000)+1);
 var name = "Anonymous#" + id
 var race_id = document.getElementById("race_id").value;
+var race_max_players = document.getElementById("race_max_players").value;
 var TypeRacerWebSocket = new WebSocket(`ws://localhost:8000/ws/TypeRacer/${race_id}/`);
 function count_green_chars(word) {
 	var n = 0
@@ -15,7 +16,9 @@ function count_green_chars(word) {
 var random_text = "blabla abc dsa";
 var text_characters = Array.from(random_text);
 var text = [];
-var current_char_index = 0
+var current_char_index = 0;
+var info = document.getElementById("info");
+info.innerHTML = `Race #${race_id} - players ${document.getElementById("players").childElementCount+1}/${race_max_players}`;
 
 for (var char in text_characters){
 	text.push([text_characters[char],"black"]);
@@ -47,11 +50,11 @@ function addPlayer(chars,player_name=""){
 	}
 	player_div.appendChild(player_h2);
 	players_div.appendChild(player_div);
+	info.innerHTML = `Race #${race_id} - players ${document.getElementById("players").childElementCount}/${race_max_players}`;
 }
 
 TypeRacerWebSocket.onopen = function(event) {
 	TypeRacerWebSocket.send(JSON.stringify({"create_player":true,"player_name":name,"player_id":id,"text_length":random_text.length}));
-	addPlayer("");
 }
 
 TypeRacerWebSocket.onclose = function (event) {
@@ -61,11 +64,9 @@ TypeRacerWebSocket.onclose = function (event) {
 
 TypeRacerWebSocket.onmessage = function(event){
 	json = JSON.parse(event["data"]);
-	console.log(json);
 	message = json["message"];
-	if ("send_player_info" in json){
-		console.log("13231");
-		TypeRacerWebSocket.send(JSON.stringify({"add_player":true,"player_name":player_name}))
+	if ("send_player_info" in message){
+		TypeRacerWebSocket.send(JSON.stringify({"add_player":true,"player_name":name}))
 	}
 	else if ("connected_to_lobby" in json){
 		TypeRacerWebSocket.send(JSON.stringify({"connected_to_lobby":true,"race_id":race_id}));
@@ -86,8 +87,6 @@ TypeRacerWebSocket.onmessage = function(event){
 		player_name = json["message"]["player_name"];
 		if (document.getElementById(player_name)) {
 			document.getElementById(`${player_name}_h2`).innerHTML = `${player_name} - ${count_green_chars(chars)}-${chars.length}`;
-		} else {
-			addPlayer(chars,player_name);
 		}
 		if (player_name){
 			TypeRacerWebSocket.send(JSON.stringify({"add_player":true,"player_name":player_name}))
