@@ -9,15 +9,15 @@
 		<center>
 			<h1>TypeRacer</h1>
 			<div id="info"></div>
+			<div id="type_text"></div>
+			<input style="width: 500px;" type="text" id="text_input">
 			<div id="players">
 				{% for player in players %}
 				<div id="Anonymous#{{player.player_id}}">
-					<h2 id="Anonymous#{{player.player_id}}_h2">Anonymous#{{player.player_id}} - {{player.characters_typed}}-14</h2>
+					<h4 id="Anonymous#{{player.player_id}}_h4">Anonymous#{{player.player_id}} - {{player.characters_typed}}-14</h2>
 				</div>
 				{% endfor %}
 			</div>
-			<div id="type_text"></div>
-			<input style="width: 500px;" type="text" id="text_input">
 		</center>
 	</body>
 	<script type="text/javascript" src="{% static 'js/main.js' %}"></script>

@@ -28,10 +28,10 @@ var type_text = document.getElementById("type_text");
 function update_text() {
 	type_text.innerHTML = "";
 	for (var text_color in text) {
-		var p = document.createElement("p");
-		p.style = `display:inline;color:${text[text_color][1]}`
-		p.innerHTML = text[text_color][0];
-		type_text.appendChild(p);
+		var h3 = document.createElement("h3");
+		h3.style = `display:inline;color:${text[text_color][1]}`
+		h3.innerHTML = text[text_color][0];
+		type_text.appendChild(h3);
 	}
 }
 function addPlayer(chars,player_name=""){
@@ -41,14 +41,14 @@ function addPlayer(chars,player_name=""){
 	}
 	player_div = document.createElement("div")
 	player_div.id = player_name;
-	player_h2 = document.createElement("h2")
-	player_h2.id = `${player_name}_h2`
+	player_h4 = document.createElement("h4")
+	player_h4.id = `${player_name}_h4`
 	if (chars){
-		player_h2.innerHTML = `${player_name} - ${count_green_chars(chars)}-${chars.length}`;
+		player_h4.innerHTML = `${player_name} - ${count_green_chars(chars)}-${chars.length}`;
 	} else {
-		player_h2.innerHTML = `${player_name} - 0-${text.length}`;
+		player_h4.innerHTML = `${player_name} - 0-${text.length}`;
 	}
-	player_div.appendChild(player_h2);
+	player_div.appendChild(player_h4);
 	players_div.appendChild(player_div);
 	info.innerHTML = `Race #${race_id} - players ${document.getElementById("players").childElementCount}/${race_max_players}`;
 }
@@ -86,7 +86,7 @@ TypeRacerWebSocket.onmessage = function(event){
 		chars = json["message"]["data"];
 		player_name = json["message"]["player_name"];
 		if (document.getElementById(player_name)) {
-			document.getElementById(`${player_name}_h2`).innerHTML = `${player_name} - ${count_green_chars(chars)}-${chars.length}`;
+			document.getElementById(`${player_name}_h4`).innerHTML = `${player_name} - ${count_green_chars(chars)}-${chars.length}`;
 		}
 		if (player_name){
 			TypeRacerWebSocket.send(JSON.stringify({"add_player":true,"player_name":player_name}))
