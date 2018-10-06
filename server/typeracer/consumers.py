@@ -11,6 +11,7 @@ class TypeRacerConsumer(WebsocketConsumer):
 			)
 		self.accept()
 		self.send(text_data=json.dumps({"Connected":True}))
+		self.send(text_data=json.dumps({"connected_to_lobby":True,"race_id":self.race_id}))
 	def receive(self,text_data):
 		text_data_json = json.loads(text_data);
 		async_to_sync(self.channel_layer.group_send)(
@@ -26,4 +27,4 @@ class TypeRacerConsumer(WebsocketConsumer):
 		async_to_sync(self.channel_layer.group_discard)(
 			self.race_id,
 			self.channel_name)
-		print("disconnected")
+		self.send(text_data=json.dumps({"disconnected_from_lobby":True,"race_id":self.race_id}))
