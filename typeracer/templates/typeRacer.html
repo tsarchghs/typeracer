@@ -7,7 +7,13 @@
 		<input type="hidden" id="race_id" value="{{race_id}}">
 		<center>
 			<h1>TypeRacer</h1>
-			<div id="players"></div>
+			<div id="players">
+				{% for player in players %}
+				<div id="Anonymous#{{player.id}}">
+					<h2 id="Anonymous#{{player.id}}_h2">Anonymous#{{player.id}} - {{player.characters_typed}}-14</h2>
+				</div>
+				{% endfor %}
+			</div>
 			<div id="type_text"></div>
 			<input style="width: 500px;" type="text" id="text_input">
 		</center>
