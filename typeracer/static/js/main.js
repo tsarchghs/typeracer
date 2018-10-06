@@ -54,6 +54,11 @@ TypeRacerWebSocket.onopen = function(event) {
 	addPlayer("");
 }
 
+TypeRacerWebSocket.onclose = function (event) {
+  	TypeRacerWebSocket.send(JSON.stringify({"remove_player":true,"player_name":name,"player_id":id}));
+};
+
+
 TypeRacerWebSocket.onmessage = function(event){
 	json = JSON.parse(event["data"]);
 	console.log(json);
