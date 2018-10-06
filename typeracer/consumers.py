@@ -20,8 +20,13 @@ class TypeRacerConsumer(WebsocketConsumer):
 			}
 		)
 	def receive(self,text_data):
-		text_data_json = json.loads(text_data);
+		text_data_json = json.loads(text_data)
 		try:
+			try:
+				if text_data_json["remove_player"]:
+					Player.objects.filter(pk=text_data_json["player_id"]).delete()
+			except KeyError:
+				pass
 			if text_data_json["create_player"]:
 				player_id = text_data_json["player_id"]
 				text_length = text_data_json["text_length"]
@@ -30,6 +35,7 @@ class TypeRacerConsumer(WebsocketConsumer):
 													player_id=player_id,
 													characters_typed=0,
 													text_length=text_length)
+
 		except KeyError:
 			print(text_data_json)
 			async_to_sync(self.channel_layer.group_send)(
