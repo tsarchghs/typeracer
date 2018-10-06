@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from .models import Race,Player
 # Create your views here.
 
@@ -9,5 +9,8 @@ def typeRacer(request,race_id):
 	else:
 		race = race[0]
 	players = Player.objects.filter(race=race)
-	context = {"race_id":race_id,"players":players}
-	return render(request,"typeRacer.html",context)
+	if len(players) < race.max_players:
+		context = {"race":race,"players":players}
+		return render(request,"typeRacer.html",context)
+	else:
+		return redirect("/")
