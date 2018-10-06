@@ -27,6 +27,13 @@ class TypeRacerConsumer(WebsocketConsumer):
 					Player.objects.filter(pk=text_data_json["player_id"]).delete()
 			except KeyError:
 				pass
+			try:
+				if text_data_json["update"]:
+					player = Player.objects.get(player_id=int(text_data_json["player_name"].split("#")[1]))
+					player.characters_typed = text_data_json["green_chars"]
+					player.save()
+			except KeyError:
+				pass
 			if text_data_json["create_player"]:
 				player_id = text_data_json["player_id"]
 				text_length = text_data_json["text_length"]
