@@ -81,9 +81,9 @@ TypeRacerWebSocket.onmessage = function(event){
 		if (player_name){
 			TypeRacerWebSocket.send(JSON.stringify({"add_player":true,"player_name":player_name}))
 		}
-	} else if (message && !("connected_to_lobby" in message)) {
+	} else if (message && "update" in message) {
 		chars = json["message"]["data"];
-		player_name = json["message"]["player"];
+		player_name = json["message"]["player_name"];
 		if (document.getElementById(player_name)) {
 			document.getElementById(`${player_name}_h2`).innerHTML = `${player_name} - ${count_green_chars(chars)}-${chars.length}`;
 		} else {
@@ -128,5 +128,5 @@ document.addEventListener("keydown", (event) => {
 		}
 	}
 	update_text();
-	TypeRacerWebSocket.send(JSON.stringify({"player":name,"data":text}));
+	TypeRacerWebSocket.send(JSON.stringify({"update":true,"player_name":name,"data":text}));
 })
