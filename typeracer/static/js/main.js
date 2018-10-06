@@ -1,9 +1,8 @@
 
-var name = "Anonymous#" + Math.floor((Math.random()*1000)+1);
+var id = Math.floor((Math.random()*1000)+1);
+var name = "Anonymous#" + id
 var race_id = document.getElementById("race_id").value;
-console.log(TypeRacerWebSocket);
 var TypeRacerWebSocket = new WebSocket(`ws://localhost:8000/ws/TypeRacer/${race_id}/`);
-
 function count_green_chars(word) {
 	var n = 0
 	for (var char_color in word) {
@@ -17,9 +16,11 @@ var random_text = "blabla abc dsa";
 var text_characters = Array.from(random_text);
 var text = [];
 var current_char_index = 0
+
 for (var char in text_characters){
 	text.push([text_characters[char],"black"]);
 }
+
 var type_text = document.getElementById("type_text");
 function update_text() {
 	type_text.innerHTML = "";
@@ -48,16 +49,24 @@ function addPlayer(chars,player_name=""){
 	players_div.appendChild(player_div);
 }
 
+TypeRacerWebSocket.onopen = function(event) {
+	TypeRacerWebSocket.send(JSON.stringify({"create_player":true,"player_name":name,"player_id":id,"text_length":random_text.length}));
+	addPlayer("");
+}
+
 TypeRacerWebSocket.onmessage = function(event){
 	json = JSON.parse(event["data"]);
+	console.log(json);
 	message = json["message"];
 	if ("send_player_info" in json){
+		console.log("13231");
+		TypeRacerWebSocket.send(JSON.stringify({"add_player":true,"player_name":player_name}))
 	}
 	else if ("connected_to_lobby" in json){
-		TypeRacerWebSocket.send(JSON.stringify({"connected_to_lobby":true,"race_id":"1"}));
+		TypeRacerWebSocket.send(JSON.stringify({"connected_to_lobby":true,"race_id":race_id}));
 		TypeRacerWebSocket.send(JSON.stringify({"send_player_info":true}));
 	}
-	if (message && "add_player" in message) {
+	else if (message && "add_player" in message) {
 		if (!document.getElementById(message["player_name"])){
 			console.log(message);
 			addPlayer("",message["player_name"]);
