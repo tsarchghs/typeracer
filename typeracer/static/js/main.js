@@ -49,13 +49,16 @@ function addPlayer(chars,player_name=""){
 
 TypeRacerWebSocket.onmessage = function(event){
 	json = JSON.parse(event["data"]);
-	console.log(json);
 	message = json["message"];
-	if ("connected_to_lobby" in json){
-		TypeRacerWebSocket.send(JSON.stringify({"connected_to_lobby":true,"race_id":"1"}))	
+	if ("send_player_info" in json){
+	}
+	else if ("connected_to_lobby" in json){
+		TypeRacerWebSocket.send(JSON.stringify({"connected_to_lobby":true,"race_id":"1"}));
+		TypeRacerWebSocket.send(JSON.stringify({"send_player_info":true}));
 	}
 	if (message && "add_player" in message) {
 		if (!document.getElementById(message["player_name"])){
+			console.log(message);
 			addPlayer("",message["player_name"]);
 		}
 	} else if (json["Connected"]){
@@ -64,7 +67,6 @@ TypeRacerWebSocket.onmessage = function(event){
 			TypeRacerWebSocket.send(JSON.stringify({"add_player":true,"player_name":player_name}))
 		}
 	} else if (message && !("connected_to_lobby" in message)) {
-		console.log(event);
 		chars = json["message"]["data"];
 		player_name = json["message"]["player"];
 		if (document.getElementById(player_name)) {
@@ -83,7 +85,6 @@ var text_input = document.getElementById("text_input");
 
 document.addEventListener("keydown", (event) => {
 	if (event.key == "Backspace"){
-		console.log(current_char_index);
 		if (text.length > current_char_index && current_char_index > 0){
 			text[current_char_index-1][1] = "black";
 		}
@@ -92,9 +93,14 @@ document.addEventListener("keydown", (event) => {
 		}
 	}
 	else if (event.key == " " || event.key == "Enter"){
-		text_input.value = "";
-		text[current_char_index][1] = "green";
-		current_char_index++;
+		if (text[current_char_index][0] === " "){
+			text_input.value = "";
+			text[current_char_index][1] = "green";
+			current_char_index++;
+		} else {
+			text[current_char_index][1] = "red";
+			current_char_index++;			
+		}
 	}
 	else if (current_char_index < text.length){
 		if (text_input === document.activeElement){
