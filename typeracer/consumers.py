@@ -6,7 +6,7 @@ import json
 class TypeRacerConsumer(WebsocketConsumer):
 	def connect(self):
 		self.race_id = self.scope['url_route']['kwargs']['race_id']
-		self.race = Race.objects.get(pk=self.race_id)
+		self.race = Race.objects.get(pk=self.race_id,max_players=5)
 		async_to_sync(self.channel_layer.group_add)(
 			self.race_id,
 			self.channel_name
@@ -16,7 +16,7 @@ class TypeRacerConsumer(WebsocketConsumer):
 			self.race_id,
 			{
 				"type":"shareEvent",
-				"message":{"connected_to_lobby":True,"race_id":self.race_id}
+				"message":{"send_player_info":True}
 			}
 		)
 	def receive(self,text_data):
