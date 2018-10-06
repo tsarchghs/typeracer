@@ -5,21 +5,22 @@ import json
 class TypeRacerConsumer(WebsocketConsumer):
 	def connect(self):
 		self.race_id = "1"
-		print("DASDASDASSA")
 		async_to_sync(self.channel_layer.group_add)(
 			self.race_id,
 			self.channel_name
 			)
 		self.accept()
+		self.send(text_data=json.dumps({"Connected":True}))
 	def receive(self,text_data):
-		print(text_data)
+		text_data_json = json.loads(text_data);
 		async_to_sync(self.channel_layer.group_send)(
 			self.race_id,
 			{
-				"type":"getProgress",
-				"message":json.loads(text_data)
+				"type":"shareEvent",
+				"message":text_data_json
 			})
-	def getProgress(self,event):
+	def shareEvent(self,event):
+		print(event)
 		self.send(text_data=json.dumps(event))
 	def disconnect(self,close_code):
 		async_to_sync(self.channel_layer.group_discard)(
