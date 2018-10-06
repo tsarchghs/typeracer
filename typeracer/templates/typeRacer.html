@@ -1,8 +1,10 @@
+{% load static %}
 <html>
 	<head>
 		<title>TypeRacer</title>
 	</head>
 	<body>
+		<input type="hidden" id="race_id" value="{{race_id}}">
 		<center>
 			<h1>TypeRacer</h1>
 			<div id="players"></div>
@@ -10,5 +12,5 @@
 			<input style="width: 500px;" type="text" id="text_input">
 		</center>
 	</body>
-	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript" src="{% static 'js/main.js' %}"></script>
 </html>
