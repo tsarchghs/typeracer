@@ -1,5 +1,6 @@
 
-var TypeRacerWebSocket = new WebSocket("ws://localhost:8000/ws/TypeRacer/");
+var race_id = document.getElementById("race_id").value;
+var TypeRacerWebSocket = new WebSocket(`ws://localhost:8000/ws/TypeRacer/${race_id}/`);
 
 function addLobby(id){
 	ul = document.getElementById("lobbies_ul");

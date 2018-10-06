@@ -1,7 +1,8 @@
 
 var name = "Anonymous#" + Math.floor((Math.random()*1000)+1);
-var TypeRacerWebSocket = new WebSocket("ws://localhost:8000/ws/TypeRacer/");
-
+var race_id = document.getElementById("race_id").value;
+console.log(TypeRacerWebSocket);
+var TypeRacerWebSocket = new WebSocket(`ws://localhost:8000/ws/TypeRacer/${race_id}/`);
 
 function count_green_chars(word) {
 	var n = 0
