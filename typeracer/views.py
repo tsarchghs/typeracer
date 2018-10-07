@@ -6,11 +6,10 @@ def races(request):
 	race_players = {}
 	races = Race.objects.all()
 	players = Player.objects.all()
+	for race in races:
+		race_players[race] = []
 	for player in players:
-		if player.race in race_players:
 			race_players[player.race].append(player)
-		else:
-			race_players[player.race] = [player]
 	context = {"race_players":race_players}
 	return render(request,"races.html",context)
 
