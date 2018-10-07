@@ -2,20 +2,41 @@
 
 var TypeRacerWebSocket = new WebSocket(`ws://localhost:8000/ws/TypeRacer/all/`);
 
-
-function addRace(id){
+function addRaceLi(id,current_players=0,max_players=0,status="open"){
+	console.log(current_players,max_players,status);
 	ul = document.getElementById("races_ul");
 	if (!document.getElementById(id)){
 		lobby_li = document.createElement("li");
 		lobby_li.id = id;
-		lobby_li.innerHTML = `#${id} - 1`;
+		lobby_li.innerHTML = `#${id} - ${current_players}/${max_players} (${status})`
 		ul.appendChild(lobby_li);
-	} else {
-		lobby_li = document.getElementById(id)
-		lobby_li.innerHTML = `#${id} - ${Number(lobby_li.innerHTML.split(" ")[2])+1}`;
+		a = document.createElement("a")
+		a.href = `/play/${id}`
+		button = document.createElement("button");
+		button.innerHTML = "Join";
+		a.appendChild(button);
+		ul.appendChild(a);
 	}
 }
 
+function createRace(){
+	var csrftoken = Cookies.get('csrftoken');
+	max_players = prompt("max_players: ");
+	while (!(max_players==Number(max_players))){
+		max_players = prompt("Please enter a number!\nmax_players: ");
+	}
+	$.ajax({
+		type:"POST",
+		data: {"csrfmiddlewaretoken":csrftoken,
+				"max_players":Number(max_players)},
+		url:"/create_race"
+	}).done(function(json){
+		race_id = json[0]["pk"];
+		race = json[0]["fields"];
+		TypeRacerWebSocket.send(JSON.stringify({"add_race":true,"race_id":race_id,"status":race["status"],
+												"max_players":race["max_players"]}));
+	})
+}
 TypeRacerWebSocket.onmessage = function(event) {
 	json = JSON.parse(event.data);
 	console.log(json);
@@ -26,13 +47,8 @@ TypeRacerWebSocket.onmessage = function(event) {
 		current_players = String(Number(race_players.innerHTML.split("/")[0]) + 1);
 		max_players = race_players.innerHTML.split("/")[1];
 		race_players.innerHTML = `${current_players}/${max_players}`;
-	}
-	if ("connected_to_lobby" in json) {
-		addRace(json["race_id"]);
-	} else if ("message" in json){
-		message = json["message"];
-		if ("connected_to_lobby" in message) {
-			addRace(message["race_id"]);
-		}
+	} else if (message && "add_race" in message){
+		console.log(message);
+		addRaceLi(message["race_id"],0,message["max_players"],message["status"]);
 	}
 }
