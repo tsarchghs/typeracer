@@ -21,5 +21,6 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("races/",views.races,name="races"),
     path("play/<race_id>", views.typeRacer,name="typeRacer"),
 ] +  static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
