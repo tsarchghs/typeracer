@@ -8,7 +8,13 @@ function addRaceLi(id,current_players=0,max_players=0,status="open"){
 	if (!document.getElementById(id)){
 		lobby_li = document.createElement("li");
 		lobby_li.id = id;
-		lobby_li.innerHTML = `#${id} - ${current_players}/${max_players} (${status})`
+		lobby_li.innerHTML = `#${id} - `
+		p = document.createElement("p");
+		p.id = `${id}_players`;
+		p.style = "display:inline;"
+		p.innerHTML = `${current_players}/${max_players}`
+		lobby_li.appendChild(p);
+		lobby_li.innerHTML += ` (${status})`;
 		ul.appendChild(lobby_li);
 		a = document.createElement("a")
 		a.href = `/play/${id}`
