@@ -1,6 +1,14 @@
 from django.shortcuts import render,redirect
+from django.core import serializers
+from django.http import HttpResponse
 from .models import Race,Player
 # Create your views here.
+
+def create_race(request):
+	max_players = request.POST.get("max_players")
+	race = Race.objects.create(max_players=int(max_players),status="open")
+	json = serializers.serialize("json",Race.objects.filter(pk=race.id))
+	return HttpResponse(json,content_type="application/json")
 
 def races(request):
 	race_players = {}
