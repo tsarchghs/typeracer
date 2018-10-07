@@ -6,45 +6,44 @@ import json
 class TypeRacerConsumer(WebsocketConsumer):
 	def connect(self):
 		self.race_id = self.scope['url_route']['kwargs']['race_id']
-		self.race = Race.objects.get(pk=self.race_id,max_players=5)
+		self.accept()
 		async_to_sync(self.channel_layer.group_add)(
 			self.race_id,
 			self.channel_name
 			)
-		self.accept()
-		async_to_sync(self.channel_layer.group_send)(
-			self.race_id,
-			{
-				"type":"shareEvent",
-				"message":{"send_player_info":True}
-			}
-		)
+		if self.race_id != "all":
+			self.race = Race.objects.get(pk=self.race_id)
+			async_to_sync(self.channel_layer.group_send)(
+				self.race_id,
+				{
+					"type":"shareEvent",
+					"message":{"send_player_info":True}
+				}
+			)
 	def receive(self,text_data):
 		text_data_json = json.loads(text_data)
-		try:
-			try:
-				if text_data_json["remove_player"]:
-					Player.objects.filter(pk=text_data_json["player_id"]).delete()
-			except KeyError:
-				pass
-			try:
-				if text_data_json["update"]:
+		print(text_data_json)
+		if "update_race" in text_data_json:
+			async_to_sync(self.channel_layer.group_send)(
+				"all",
+				{
+					"type":"shareEvent",
+					"message":text_data_json
+				})
+		else:	
+			if "remove_player" in text_data_json:
+				Player.objects.filter(pk=text_data_json["player_id"]).delete()
+			if "update" in text_data_json:
 					player = Player.objects.get(player_id=int(text_data_json["player_name"].split("#")[1]))
 					player.characters_typed = text_data_json["green_chars"]
 					player.save()
-			except KeyError:
-				pass
-			if text_data_json["create_player"]:
+			if "create_player" in text_data_json:
 				player_id = text_data_json["player_id"]
 				text_length = text_data_json["text_length"]
-
 				self.player = Player.objects.create(race=self.race,
 													player_id=player_id,
 													characters_typed=0,
 													text_length=text_length)
-
-		except KeyError:
-			print(text_data_json)
 			async_to_sync(self.channel_layer.group_send)(
 				self.race_id,
 				{
