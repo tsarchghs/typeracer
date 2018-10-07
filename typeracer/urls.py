@@ -23,4 +23,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("races/",views.races,name="races"),
     path("play/<race_id>", views.typeRacer,name="typeRacer"),
+    path("create_race",views.create_race,name="create_race"),
 ] +  static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
