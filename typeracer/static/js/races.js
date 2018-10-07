@@ -43,6 +43,9 @@ function createRace(){
 												"max_players":race["max_players"]}));
 	})
 }
+
+document.getElementById("create").onclick = createRace;
+
 TypeRacerWebSocket.onmessage = function(event) {
 	json = JSON.parse(event.data);
 	console.log(json);
