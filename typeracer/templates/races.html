@@ -7,10 +7,12 @@
 	Races:
 	<div id="races">
 		<ul id="races_ul">
-
+			{% for race,players in race_players.items %}
+				<li id="{{race.id}}">#{{race.id}} - <p style="display:inline;" id="{{race.id}}_players">{{players|length}}/{{race.max_players}}</p> ({{race.status}})</li>
+				<a href="{% url 'typeRacer' race.id %}"><button type="button">Join</button></a>
+			{% endfor %}
 		</ul>
 	</div>
-
 </body>
 <script type="text/javascript" src="{% static 'js/races.js' %}"></script>
 <html>
